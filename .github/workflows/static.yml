@@ -1,20 +1,15 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Deploy React App to GitHub Pages
 
 on:
-  # Runs on pushes targeting the main branch
   push:
-    branches: ["main"]
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    branches: ["main"]   # Run when pushing to main
+  workflow_dispatch:     # Allow manual runs
 
-# GitHub token permissions for deployment
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one deployment at a time
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -25,42 +20,42 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
-      # Download source code from repository
-      - name: Checkout
+      # 1️⃣ Checkout the repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # Install Node.js with npm caching
-      - name: Set up Node
+      # 2️⃣ Set up Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
 
-      # Install dependencies (faster than npm install)
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Build React app for production
-      - name: Build
+      # 4️⃣ Build the app
+      - name: Build app
         run: npm run build
 
-      # Copy index.html to 404.html for SPA routing
-      # This ensures React Router works on GitHub Pages
-      - name: Copy index.html to 404.html for SPA routing
-        run: cp ./dist/index.html ./dist/404.html
+      # 5️⃣ Fix routing for React Router
+      - name: Copy index.html to 404.html
+        run: cp ./build/index.html ./build/404.html
 
-      # Configure GitHub Pages
+      # 6️⃣ Configure GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # Upload build output
+      # 7️⃣ Upload build folder
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./dist"
+          path: ./build
 
-      # Deploy to GitHub Pages
+      # 8️⃣ Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
